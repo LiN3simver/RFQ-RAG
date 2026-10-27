@@ -1,0 +1,50 @@
+# 展示用：說明服務的組成方式。公開版不含資料與 SQL，起得來但查不到東西。
+#
+#   db        Postgres 18 + pgvector
+#   api       本服務（:8300），只給 Agent Hub 透過內部網路 ragnet 呼叫 /a2a/*
+#   pipeline  批次（PDF 解析、向量化），按需 `docker compose run`，不常駐
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${PGPASSWORD:-changeme}
+      POSTGRES_DB: rfq_rag
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rfq_rag"]
+      interval: 5s
+      retries: 20
+
+  api:
+    build: {context: ., target: api}
+    container_name: agent-rfq
+    restart: unless-stopped
+    environment:
+      PG_DSN: postgresql://postgres:${PGPASSWORD:-changeme}@db:5432/rfq_rag
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://llm-gateway:4000}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      DOC_ROOT: /app/data
+    ports:
+      - "127.0.0.1:8300:8300"
+    depends_on:
+      db: {condition: service_healthy}
+    networks: [default, ragnet]
+
+  pipeline:
+    profiles: ["pipeline"]
+    build: {context: ., target: pipeline}
+    environment:
+      PG_DSN: postgresql://postgres:${PGPASSWORD:-changeme}@db:5432/rfq_rag
+      DOC_ROOT: /app/data
+    depends_on:
+      db: {condition: service_healthy}
+
+networks:
+  default:
+  ragnet:
+    external: true
+
+volumes:
+  pgdata:

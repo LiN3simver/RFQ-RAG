@@ -1,0 +1,11 @@
+# API 請求路徑的相依（Docker 的 api target）。不含 torch 與 PDF/OCR 套件。
+fastapi==0.141.1
+uvicorn[standard]==0.52.0
+anthropic==0.120.2          # LLM gateway 是 Anthropic Messages API 相容
+python-dotenv==1.2.2
+psycopg[binary,pool]==3.3.4
+pgvector==0.5.0
+onnxruntime==1.28.0         # 查詢編碼：BGE-M3 官方 ONNX
+tokenizers==0.22.2
+huggingface-hub==1.26.0
+numpy==2.5.1

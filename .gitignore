@@ -1,0 +1,12 @@
+.env
+data/
+*.dump
+*.pdf
+*.csv
+*.sql
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+logs/

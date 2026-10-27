@@ -1,0 +1,3 @@
+# torch 版編碼後端（EMBED_BACKEND=torch），只在本機用來與 ONNX 版對拍向量。不進任何 image。
+torch==2.13.0
+sentence-transformers==5.6.1

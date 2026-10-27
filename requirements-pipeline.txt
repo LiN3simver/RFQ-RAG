@@ -1,0 +1,6 @@
+# 批次（PDF 解析、OCR、向量化）的相依，是 API 那份的超集（Docker 的 pipeline target）。
+-r requirements-api.txt
+pymupdf==1.28.0
+pdfplumber==0.11.10
+fonttools==4.63.0           # 讀字型表修復壞掉的文字層
+rapidocr_onnxruntime==1.4.4
